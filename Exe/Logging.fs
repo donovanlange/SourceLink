@@ -7,8 +7,6 @@ open System.Diagnostics
 
 let mutable verbose = false
 
-let monitor = new Object()
-
 type Trace = {
     Level: TraceLevel
     Text: string
@@ -31,24 +29,12 @@ let traceWarnfn fmt = Printf.ksprintf traceWarn fmt
 
 
 // Console Trace
-
-let traceColored color (s:string) = 
-    let curColor = Console.ForegroundColor
-    if curColor <> color then Console.ForegroundColor <- color
-    let textWriter = 
-        match color with
-        | ConsoleColor.Yellow -> Console.Error
-        | ConsoleColor.Red -> Console.Error
-        | _ -> Console.Out
-    textWriter.WriteLine s
-    if curColor <> color then Console.ForegroundColor <- curColor
-
-let traceToConsole (trace:Trace) =
-    lock monitor
-        (fun () ->
-            match trace.Level with
-            | TraceLevel.Warning -> traceColored ConsoleColor.Yellow trace.Text
-            | TraceLevel.Error -> traceColored ConsoleColor.Red trace.Text
-            | _ ->
-                if trace.NewLine then Console.WriteLine trace.Text
-                else Console.Write trace.Text )
+let traceToConsole (t:Trace) =
+    let prnt =
+        let stdout = if t.NewLine then printfn else printf
+        let stderr = if t.NewLine then eprintfn else eprintf
+        match t.Level with
+        | TraceLevel.Warning -> stderr
+        | TraceLevel.Error -> stderr
+        | _ -> stdout
+    prnt "%s" t.Text

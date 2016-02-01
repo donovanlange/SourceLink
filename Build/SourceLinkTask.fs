@@ -71,11 +71,14 @@ type SourceLinkTask() =
         p.WorkingDirectory <- x.ProjectDirectory // x.Sources are relative
         let out = StringBuilder()
         let err = StringBuilder()
-        p.Stdout |> Observable.add (out.Appendf "%s\n")
-        p.Stderr |> Observable.add (fun s ->
+        p.Stdout |> Observable.add (fun s ->
             out.Appendf "%s\n" s
-            err.Appendf "%s\n" s
-            hasWarnings <- true )
+        )
+        p.Stderr |> Observable.add (fun s ->
+//            out.Appendf "%s\r\n" s
+//            err.Appendf "%s\r\n" s
+            hasWarnings <- true
+        )
         let cmd = sprintf "%s> . '%s' %s" p.WorkingDirectory p.FileName p.Arguments
         if verbose then
             x.MessageHigh "%s" cmd
@@ -86,17 +89,19 @@ type SourceLinkTask() =
             let outStr = out.ToString()
             let errStr = err.ToString()
             if exit <> 0 then 
-                x.MessageHigh "sourcelink: error SL101: %s" errStr
+//                x.MessageHigh "sourcelink: error SL101: %s" errStr
+                x.MessageHigh "sourcelink: error C1003: SourceLink error."
             else
                 if verbose then
                     x.MessageHigh "%s" outStr
                 else
                     x.MessageNormal "%s" outStr
                 if hasWarnings then
-                    x.MessageHigh "sourcelink: warning SL100: %s" errStr
+//                    x.MessageHigh "sourcelink: warning SL100: %s" errStr
+                    x.MessageHigh "sourcelink: warning C1004: SourceLink warning."
         with
             | ex -> 
-                x.MessageHigh "sourcelink: error SL102: %s" ex.Message
+                x.MessageHigh "sourcelink: error C1002: %s" ex.Message
                 x.MessageHigh "%s" cmd
                 x.MessageHigh "%s" (out.ToString())
                 x.Error "SourceLink failed. See build output for details."
