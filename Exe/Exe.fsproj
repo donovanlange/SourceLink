@@ -23,7 +23,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
-    <StartArguments>index --not-verify-pdb --no-pdbstr --pdb C:\cs\SourceLinkTest1\bin\Debug\SourceLinkTest1.pdb --url "https://raw.githubusercontent.com/ctaggart/SourceLink/{0}/%var2%" --file Program.cs --file Properties\AssemblyInfo.cs</StartArguments>
+    <StartArguments>index --not-verify-pdb --not-pdbstr --pdb C:\cs\SourceLinkTest1\bin\Debug\SourceLinkTest1.pdb --url "https://raw.githubusercontent.com/ctaggart/SourceLink/{0}/%var2%" --file Program.cs --file Properties\AssemblyInfo.cs</StartArguments>
     <StartWorkingDirectory>C:\cs\SourceLinkTest1</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

@@ -19,3 +19,4 @@ type Task() =
     /// logs an error and potentially fails the build
     member x.Error format = Printf.ksprintf (fun message -> x.LogError message) format
     member x.HasErrors with get() = x.Log.HasLoggedErrors
+    member x.Warning format = Printf.ksprintf (fun message -> x.Log.LogWarning message) format

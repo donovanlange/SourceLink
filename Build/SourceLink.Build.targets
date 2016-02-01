@@ -7,7 +7,8 @@
   </PropertyGroup>
   
   <Target Name="SourceLink" Condition="$(SourceLink) != ''">
-    <SourceLink.SourceLinkTask Url="$(SourceLinkUrl)" ProjectDirectory="$(MSBuildProjectDirectory)" Sources="@(Compile)" TargetPath="$(TargetPath)" />
+    <SourceLink.SourceLinkTask Verbose="$(SourceLinkVerbose)"
+        Url="$(SourceLinkUrl)" ProjectDirectory="$(MSBuildProjectDirectory)" Sources="@(Compile)" TargetPath="$(TargetPath)" />
   </Target>
 
 </Project>

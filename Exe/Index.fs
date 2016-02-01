@@ -4,7 +4,7 @@ open System.IO
 open SourceLink
 
 let run (proj:string option) (projProps:(string * string) list)
-    (url:string) (commit:string option)
+    (url:string option) (commit:string option)
     (pdbs:string list)
     (verifyGit:bool) (verifyPdb:bool) 
     (files:string list) (notFiles:string list)
@@ -28,6 +28,9 @@ let run (proj:string option) (projProps:(string * string) list)
     verbosefn "notFiles: %A" notFiles
     verbosefn "repoDir: %A" repoDir
     verbosefn "paths: %A" paths
+
+    if url.IsNone then
+        failwithf "--url must be set (unless it is detectable, see issue #10)"
 
     let pFiles, pPdbs =
         match proj with
@@ -109,7 +112,7 @@ let run (proj:string option) (projProps:(string * string) list)
         
         let srcsrvPath = pdbPath + ".srcsrv"
         tracefn "create source index %s" srcsrvPath
-        File.WriteAllBytes(srcsrvPath, SrcSrv.create url commit paths)
+        File.WriteAllBytes(srcsrvPath, SrcSrv.create url.Value commit paths)
 
         if runPdbstr then
             let pdbstr = Path.combine (System.Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName) "pdbstr.exe"

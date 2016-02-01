@@ -9,6 +9,8 @@ open System.Diagnostics
 open System.IO
 open SourceLink.Commands
 
+let consoleTrace = Logging.event.Publish |> Observable.subscribe Logging.traceToConsole
+
 let stopWatch = Stopwatch()
 stopWatch.Start()
 
@@ -32,10 +34,7 @@ let filterGlobalArgs args =
 let processWithValidation<'T when 'T :> IArgParserTemplate> validateF commandF command 
     args = 
     let parser = ArgumentParser.Create<'T>()
-    let results = 
-        parser.Parse
-            (inputs = args, raiseOnUsage = false, ignoreMissing = true, 
-             errorHandler = ProcessExiter())
+    let results = parser.Parse(inputs = args, raiseOnUsage = false, ignoreMissing = true)
     let resultsValid = validateF (results)
     if results.IsUsageRequested || not resultsValid then 
         parser.Usage(Commands.cmdLineUsageMessage command parser) |> trace
@@ -51,7 +50,7 @@ Logging.verbose <- v
 let index (results: ParseResults<_>) =
     let proj = results.TryGetResult <@ IndexArgs.Proj @>
     let projProps = results.GetResults <@ IndexArgs.Proj_Prop @>
-    let url = results.GetResult <@ IndexArgs.Url @>
+    let url = results.TryGetResult <@ IndexArgs.Url @>
     let commit = results.TryGetResult <@ IndexArgs.Commit @>
     let pdbs = results.GetResults <@ IndexArgs.Pdb @>
     let verifyGit = results.Contains <@ IndexArgs.Not_Verify_Git @> = false
@@ -114,6 +113,8 @@ try
 
         let args = args.[1..]
         handler command args
+        consoleTrace.Dispose()
+        exit 0
     | [] ->
         trace "expected a command"
         parser.Usage("available commands:") |> trace
@@ -123,7 +124,7 @@ try
         parser.Usage("available commands:") |> trace
         exit 1
 with
-| exn when not (exn :? System.NullReferenceException) -> 
+| exn when not (exn :? System.NullReferenceException) ->
     traceErrorfn "SourceLink failed with:%s  %s" Environment.NewLine exn.Message
     if verbose then
         traceErrorfn "StackTrace:%s  %s" Environment.NewLine exn.StackTrace
