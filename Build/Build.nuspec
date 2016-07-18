@@ -1,6 +1,6 @@
 ﻿<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <id>SourceLink.Build</id>
+    <id>SourceLink.Classic.Build</id>
     <version>0.0.0</version>
     <authors>Cameron Taggart</authors>
     <description>source linking .NET pdb files with MSBuild</description>
